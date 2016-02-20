@@ -94,15 +94,24 @@ module LedgerGetPrices
       # @return [String]
       def price_string_from_result(data, symbol: nil)
         raise "Must pass symbol" if symbol.nil?
+
+        price = data.close
+        price = (1 / price.to_f).round(3) if is_currency(symbol)
+        price = "$#{price}"
+
         PRICE_FORMAT % {
           date: Date.strptime(data.trade_date, '%Y-%m-%d').strftime(DATE_FORMAT),
           time: '23:59:59',
-          symbol: (BASE_CURRENCY == 'USD' ? '$' : 'USD'),
-          price: (BASE_CURRENCY == symbol ? '$' : symbol)+ data.close
+          symbol: symbol,
+          price: price
         }
       end
 
       protected
+
+      def is_currency(symbol)
+        ['MXN'].include? symbol
+      end
 
       # Start date is either the latest price record or the earliest
       # ever transaction.
