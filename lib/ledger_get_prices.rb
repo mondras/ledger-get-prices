@@ -95,7 +95,7 @@ module LedgerGetPrices
       def price_string_from_result(data, symbol: nil)
         raise "Must pass symbol" if symbol.nil?
 
-        price = data.close
+        price = data.close.to_f.round(3)
         price = (1 / price.to_f).round(3) if is_currency(symbol)
         price = "$#{price}"
 
